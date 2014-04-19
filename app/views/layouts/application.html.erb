@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<style>
+#slider {
+  width:300px;
+  margin-bottom:20px;
+}
+svg {
+  margin-top:20px;
+}
+</style>
+<head>
+  <title> <%= full_title(yield(:title)) %> </title>
+
+ <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+
+<!-- d3js -->
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+</head>
+<body>
+
+	<nav class="navbar navbar-inverse" role="navigation">
+		<ul class="nav pull-right">
+            <li><%= link_to "Home",    '#' %></li>
+            <li><%= link_to "Help",    '#' %></li>
+            <li><%= link_to "Sign in", '#' %></li>
+        </ul>
+	</nav>
+
+
+    <%= yield %>
+
+<div id="sliderWrapper">
+    <div id="slider"></div>
+</div>
+
+
+</body>
+</html>
