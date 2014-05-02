@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.dynamic-slider-control {
+  position:     relative;
+  background-color: rgb(230,230,230);
+  -moz-user-focus:  normal;
+  -moz-user-select: none;
+  cursor:       default;
+}
+
+.horizontal {
+  width:        200px;
+  height:       27px;
+}
+
+.vertical {
+  width:        29px;
+  height:       200px;
+}
+
+.dynamic-slider-control input {
+  display:  none;
+}
+
+.dynamic-slider-control .handle {
+  position:     absolute; 
+  font-size:      1px;
+  overflow:     hidden;
+  -moz-user-select: none;
+  cursor:       default;
+}
+
+.dynamic-slider-control.horizontal .handle {
+  width:        31px;
+  height:       14px;
+  background-image: url("/handle.horizontal.png");
+}
+
+.dynamic-slider-control.horizontal .handle div {}
+.dynamic-slider-control.horizontal .handle.hover {}
+
+.dynamic-slider-control.vertical .handle {
+  width:        15px;
+  height:       31px;
+  background-image: url("/handle.vertical.png");
+}
+
+.dynamic-slider-control.vertical .handle.hover {}
+
+.dynamic-slider-control .line {
+  position:     absolute;
+  font-size:      0.01mm;
+  overflow:     hidden;
+  border:       1px solid rgb(90,97,90);
+  background:     rgb(189,190,189);
+  
+  behavior:     url("/css/boxsizing.htc"); /* ie path bug */
+  box-sizing:     content-box;
+  -moz-box-sizing:  content-box;
+}
+.dynamic-slider-control.vertical .line {
+  width:        3px;
+}
+
+.dynamic-slider-control.horizontal .line {
+  height:       3px;
+}
+
+.dynamic-slider-control .line div {
+  width:    1px;
+  height:   1px;
+  
+  border:       1px solid;
+  border-color:   rgb(230,230,230) rgb(189,190,189)
+            rgb(189,190,189) rgb(230,230,230);
+}
+
+/*
+body {
+  font: 10px sans-serif;
+}
+*/
+form {
+  position: relative;
+  left: 800px;
+  top: 20px;
+}
+
+svg {
+  position: absolute;
+  top: 200px;
+  left: 100px;
+  font: 10px sans-serif;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.song_line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.dot {
+  fill: white;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+
+.area {
+  fill: rgb(252,141,89);
+}
+
+#playButton {
+  position: absolute;
+  left: 100px;
+  top: 740px;
+}
+
+#pauseButton {
+  position: absolute;
+  left: 200px;
+  top: 740px;
+}
+
+#stopButton {
+  position: absolute;
+  left: 300px;
+  top: 740px;
+}
+
+#textBox1 {
+  position: absolute;
+  left: 100px;
+  top: 780px;
+}
+
+#textBox2 {
+  position: absolute;
+  left: 250px;
+  top: 780px;
+}
+
+#textBox3 {
+  position: absolute;
+  left: 400px;
+  top: 780px;
+}
+
+#textBox4 {
+  position: absolute;
+  left: 550px;
+  top: 780px;
+}
+
+.box {
+  border: solid;
+  background: #F0F8FF;
+  width: 80%;
+  margin: 0 auto;
+  position: relative;
+  top: 900px;
+  height: 370px;
+
+  }
+
+.text{
+  font-family: 'times new roman', times, serif;
+  font-size: 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#img_sanjuan {
+  float: right;
+  margin-right: 10px;
+}
+
+#scrollbar_box {
+  background: LIGHTCYAN;
+  border: solid;
+  border-width: 3px;
+  width: 20%;
+  margin: 0 auto;
+  position: absolute;
+  left: 470px;
+  top: 90px;
+}
+#sample_id{
+  position: relative;
+  left: 20px;
+ }
+
+ #sample-input{
+  position: relative;
+  left: 150px;
+  width: 30%;
+ }
+ .sample_slider{
+  position: relative;
+  left: 20px;
+ }
+
+
+</style>
+<body>
+<div id="scrollbar_box">
+<p>
+       <label id="sample_id" for="sample-slider">Sample:</label>
+        <div class="sample_slider" id="sample-slider" tabIndex="1">
+             <input class="slider-input" id="sample-slider-input" />
+        </div>
+    <input id="sample-input"  />
+
+</p>
+</div>
+
+<script type="text/javascript" src="/scrollbar/range.js"></script>
+<script type="text/javascript" src="/scrollbar/timer.js"></script>
+<script type="text/javascript" src="/scrollbar/slider.js"></script>
+
+<script>
+
+var data = [
+{ "x": 0, "y": 3, "f":0}, 
+{ "x": 1, "y": 2, "f":1},  
+{ "x": 2, "y": 1, "f":3},
+{ "x": 3, "y": -2, "f":4}, 
+{ "x": 4, "y": 2, "f":5},                 
+{ "x": 5, "y": -1, "f":6},
+{ "x": 6, "y": 2, "f":7},                 
+{ "x": 7, "y": 3, "f":8},  
+{ "x": 8, "y": -2, "f":9},                 
+{ "x": 9, "y": 0, "f":13},  
+{ "x": 10, "y": 1, "f":14},                 
+{ "x": 11, "y": 2, "f":15},  
+{ "x": 12, "y": 3, "f":17},                 
+{ "x": 13, "y": 4, "f":18},  
+{ "x": 14, "y": -2, "f":25},                 
+{ "x": 15, "y": 0, "f":32},  
+{ "x": 16, "y": -2, "f":36},                 
+{ "x": 17, "y": 3, "f":37},  
+{ "x": 18, "y": 2, "f":43},                 
+{ "x": 19, "y": 1, "f":47},  
+{ "x": 20, "y": 2, "f":49},                 
+{ "x": 21, "y": 1, "f":52},  
+{ "x": 22, "y": 4, "f":56},                 
+{ "x": 23, "y": -1, "f":62},  
+{ "x": 24, "y": 3, "f":63},                 
+{ "x": 25, "y": 0, "f":72},  
+{ "x": 26, "y": 2, "f":73},                 
+{ "x": 27, "y": 0, "f":82},    
+{ "x": 28, "y": 3, "f":84},
+{ "x": 29, "y": 2, "f":92},
+{ "x": 30, "y": 3, "f":95},
+{ "x": 31, "y": 2, "f":101},  
+{ "x": 32, "y": 1, "f":103},
+{ "x": 33, "y": -2, "f":114}, 
+{ "x": 34, "y": 2, "f":123},                 
+{ "x": 35, "y": -1, "f":131},
+{ "x": 36, "y": 2, "f":135},                 
+{ "x": 37, "y": 3, "f":133},  
+{ "x": 38, "y": -2, "f":136},                 
+{ "x": 39, "y": 0, "f":139},  
+{ "x": 40, "y": 1, "f":124},                 
+{ "x": 41, "y": 2, "f":127},  
+{ "x": 42, "y": 3, "f":114},                 
+{ "x": 43, "y": 4, "f":87},  
+{ "x": 44, "y": -2, "f":65},                 
+{ "x": 45, "y": 0, "f":63},  
+{ "x": 46, "y": -2, "f":114},                 
+{ "x": 47, "y": 3, "f":157},  
+{ "x": 48, "y": 2, "f":163},                 
+{ "x": 49, "y": 1, "f":180},  
+{ "x": 50, "y": 2, "f":118},                 
+{ "x": 51, "y": 1, "f":174},  
+{ "x": 52, "y": 4, "f":201},                 
+{ "x": 53, "y": -1, "f":222},  
+{ "x": 54, "y": 3, "f":233},                 
+{ "x": 55, "y": 0, "f":242},  
+{ "x": 56, "y": 2, "f":243},                 
+{ "x": 57, "y": 0, "f":247},    
+{ "x": 58, "y": 3, "f":257},
+{ "x": 59, "y": 5, "f":261},
+{ "x": 60, "y": 2, "f":274}, 
+{ "x": 61, "y": 2, "f":282},  
+{ "x": 62, "y": 1, "f":263},
+{ "x": 63, "y": -2, "f":255}, 
+{ "x": 64, "y": 2, "f":237},                 
+{ "x": 65, "y": -1, "f":233},
+{ "x": 66, "y": 2, "f":228},                 
+{ "x": 67, "y": 3, "f":215},  
+{ "x": 68, "y": -2, "f":197},                 
+{ "x": 69, "y": 0, "f":190},  
+{ "x": 70, "y": 1, "f":188},                 
+{ "x": 71, "y": 2, "f":179},  
+{ "x": 72, "y": 3, "f":170},                 
+{ "x": 73, "y": 4, "f":160},  
+{ "x": 74, "y": -2, "f":158},                 
+{ "x": 75, "y": 0, "f":155},  
+{ "x": 76, "y": -2, "f":148},                 
+{ "x": 77, "y": 3, "f":145},  
+{ "x": 78, "y": 2, "f":201},                 
+{ "x": 79, "y": 1, "f":222},  
+{ "x": 80, "y": 2, "f":229},                 
+{ "x": 81, "y": 1, "f":234},  
+{ "x": 82, "y": 4, "f":249},                 
+{ "x": 83, "y": -1, "f":250},  
+{ "x": 84, "y": 3, "f":255},                 
+{ "x": 85, "y": 0, "f":260},  
+{ "x": 86, "y": 2, "f":261},                 
+{ "x": 87, "y": 0, "f":258},    
+{ "x": 88, "y": 3, "f":255},
+{ "x": 89, "y": 4, "f":254},
+{ "x": 90, "y": 3, "f":253}, 
+{ "x": 91, "y": 2, "f":250},  
+{ "x": 92, "y": 1, "f":249},
+{ "x": 93, "y": -2, "f":247}, 
+{ "x": 94, "y": 2, "f":243},                 
+{ "x": 95, "y": -1, "f":240},
+{ "x": 96, "y": 2, "f":237},                 
+{ "x": 97, "y": 3, "f":235},  
+{ "x": 98, "y": -2, "f":233},                 
+{ "x": 99, "y": 0, "f":230},  
+{ "x": 100, "y": 1, "f":229},                 
+{ "x": 101, "y": 2, "f":155},  
+{ "x": 102, "y": 3, "f":133},                 
+{ "x": 103, "y": 4, "f":144},  
+{ "x": 104, "y": -2, "f":157},                 
+{ "x": 105, "y": 0, "f":169},  
+{ "x": 106, "y": -2, "f":178},                 
+{ "x": 107, "y": 3, "f":180},  
+{ "x": 108, "y": 2, "f":185},                 
+{ "x": 109, "y": 1, "f":189},  
+{ "x": 110, "y": 2, "f":191},                 
+{ "x": 111, "y": 1, "f":200},  
+{ "x": 112, "y": 4, "f":203},                 
+{ "x": 113, "y": -1, "f":222},  
+{ "x": 114, "y": 3, "f":240},                 
+{ "x": 115, "y": 0, "f":278},  
+{ "x": 116, "y": 2, "f":281},                 
+{ "x": 117, "y": 0, "f":277},    
+{ "x": 118, "y": 3, "f":275},
+{ "x": 119, "y": 4, "f":274},
+{ "x": 120, "y": 3, "f":273}, 
+{ "x": 121, "y": 2, "f":271},  
+{ "x": 122, "y": 1, "f":264},
+{ "x": 123, "y": -2, "f":182}, 
+{ "x": 124, "y": 2, "f":159},                 
+{ "x": 125, "y": -1, "f":157},
+{ "x": 126, "y": 2, "f":155},                 
+{ "x": 127, "y": 3, "f":149},  
+{ "x": 128, "y": -2, "f":146},                 
+{ "x": 129, "y": 0, "f":143},  
+{ "x": 130, "y": 1, "f":142},                 
+{ "x": 131, "y": 2, "f":140},  
+{ "x": 132, "y": 3, "f":138},                 
+{ "x": 133, "y": 4, "f":137},  
+{ "x": 134, "y": -2, "f":135},                 
+{ "x": 135, "y": 0, "f":132},  
+{ "x": 136, "y": -2, "f":129},                 
+{ "x": 137, "y": 3, "f":125},  
+{ "x": 138, "y": 2, "f":123},                 
+{ "x": 139, "y": 1, "f":122},  
+{ "x": 140, "y": 2, "f":115},                 
+{ "x": 141, "y": 1, "f":112},  
+{ "x": 142, "y": 4, "f":106},                 
+{ "x": 143, "y": -1, "f":102},  
+{ "x": 144, "y": 3, "f":93},                 
+{ "x": 145, "y": 0, "f":92},  
+{ "x": 146, "y": 2, "f":90},                 
+{ "x": 147, "y": 0, "f":88},    
+{ "x": 148, "y": 3, "f":85},
+{ "x": 149, "y": 2, "f":82},
+{ "x": 150, "y": 4, "f":73}, 
+{ "x": 151, "y": 2, "f":71},  
+{ "x": 152, "y": 1, "f":63},
+{ "x": 153, "y": -2, "f":60}, 
+{ "x": 154, "y": 2, "f":58},                 
+{ "x": 155, "y": -1, "f":51},
+{ "x": 156, "y": 2, "f":45},                 
+{ "x": 157, "y": 3, "f":42},  
+{ "x": 158, "y": -2, "f":36},                 
+{ "x": 159, "y": 0, "f":33},  
+{ "x": 160, "y": 1, "f":24},                 
+{ "x": 161, "y": 2, "f":21},  
+{ "x": 162, "y": 3, "f":17},                 
+{ "x": 163, "y": 4, "f":15},  
+{ "x": 164, "y": -2, "f":12},                 
+{ "x": 165, "y": 0, "f":10},  
+{ "x": 166, "y": -2, "f":9},                 
+{ "x": 167, "y": 3, "f":8},  
+{ "x": 168, "y": 2, "f":7},                 
+{ "x": 169, "y": 1, "f":6},  
+{ "x": 170, "y": 2, "f":5},                 
+{ "x": 171, "y": 1, "f":2},  
+{ "x": 172, "y": 4, "f":0},  
+];
+
+var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x = d3.scale.linear()
+//input
+    .domain([0,d3.max(data, function(d) { return d.x; })])
+//output
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .domain([d3.min(data, function(d) { return d.y; }), d3.max(data, function(d) { return d.y; })+3])
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+//Labels
+var title = "Sample";
+var xaxis = "Time (seconds)";
+var yaxis = "Voltage (volt)";
+
+//Define la línea: cómo obtener el "x" y el "y". 
+var line = d3.svg.line()
+    .interpolate("monotone")
+    .x(function(d) { return x(d.x); })
+    .y(function(d) { return y(d.y); });
+    //.x(function(d) { return x(d[0]); })
+    //.y(function(d) { return y(d[1]); });
+
+var dot_line = d3.svg.line()
+    .interpolate("monotone")
+    .x(function(d) { return x(d.x); })
+    .y(function(d) { return y(d.y); });
+
+
+
+
+//Container
+var svg = d3.select("body").append("svg")
+    .datum(data)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+//Axis X
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+    .append("text");
+
+//Label X axis    
+svg.append("text")               
+        .attr("x", width / 2 )
+        .attr("y", height + margin.bottom -3)
+        .style("text-anchor", "middle")
+        .attr("class", "label_x")
+        .text(xaxis);
+
+//Axis Y
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .attr("class", "label_y")
+      .text(yaxis);
+
+//Title
+svg.append("text")
+        .attr("x", (width / 2))       
+        .attr("y", 20 - (margin.top / 2))
+        .attr("text-anchor", "middle") 
+        .attr("class", "label_title")
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text(title);
+
+//Path
+svg.append("path")
+    .attr("class", "line")
+    .attr("d", line)
+    .style("stroke-dasharray", ("3, 3"));
+
+
+//Puntos
+svg.selectAll(".dot")
+    .data(data)
+  .enter().append("circle")
+    .attr("class", "dot")
+    .attr("cx", dot_line.x())
+    .attr("cy", dot_line.y())
+    .attr("r", 3.5);
+
+ </script>
+
+
+<script type="text/javascript">
+
+// init code
+var s = new Slider(document.getElementById("sample-slider"), document.getElementById("sample-slider-input"));
+s.setMaximum(173);
+
+var si = document.getElementById("sample-input");
+si.onchange = function () {
+  s.setValue(parseInt(this.value));
+};
+
+s.onchange = function () {
+      var value = s.getValue(); 
+      si.value = value;
+
+      var max = 173;  
+      //var value = 127;
+      var spaces = 0;  
+      spaces = max/value -1;
+      var count_x = 0;
+      var s_count_x = 0;
+      var count_y = 0;
+      var s_count_y = 0;
+      var first_x = 0;
+      var first_y = 0;
+      var f_x = true;
+      var f_y = true;
+      dot_line.x(function(d) {
+                      if(f_x)
+                      {
+                        count_x++; 
+                        first_x = x(d.x);
+                        f_x = false;
+                        return first_x; 
+                      }
+                      if(s_count_x >= spaces && count_x<value)
+                      {
+                        count_x++;
+                        s_count_x = 0;
+                        return x(d.x);
+                      }
+                      else
+                      {
+                        s_count_x++;
+                        return first_x;
+                      }
+
+
+                        })
+        .y(function(d) {
+                      if(f_y)
+                      {
+                        count_y++; 
+                        first_y = y(d.y);
+                        f_y = false;
+                        return first_y; 
+                      }  
+                      if(s_count_y >= spaces && count_y<value)
+                      {
+                        count_y++;
+                        s_count_y = 0;
+                        return y(d.y);
+                      }
+                      else
+                      {
+                        s_count_y++;
+                        return first_y;
+                      }
+                       
+                        });
+        var svg = d3.select("body").transition();
+        svg.selectAll(".dot") //change dots  
+           .duration(750)
+           .attr("cx", dot_line.x())
+           .attr("cy", dot_line.y());
+
+}  
+  
+
+s.setValue(173);
+/*
+function fixSize() {
+  s.recalculate();
+
+}
+
+window.onresize = fixSize;
+
+fixSize();
+*/
+
+</script>
+<script>
+var home = document.getElementById('home');
+var signal_and_sampling = document.getElementById('signal_and_sampling');
+var sampling = document.getElementById('sampling');
+
+home.className = "";
+signal_and_sampling.className = "";
+sampling.className = "active";
+
+</script>
+</body>

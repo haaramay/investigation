@@ -2,10 +2,86 @@
 <meta charset="utf-8">
 <style>
 
+.dynamic-slider-control {
+  position:     relative;
+  background-color: rgb(230,230,230);
+  -moz-user-focus:  normal;
+  -moz-user-select: none;
+  cursor:       default;
+}
+
+.horizontal {
+  width:        200px;
+  height:       27px;
+}
+
+.vertical {
+  width:        29px;
+  height:       200px;
+}
+
+.dynamic-slider-control input {
+  display:  none;
+}
+
+.dynamic-slider-control .handle {
+  position:     absolute; 
+  font-size:      1px;
+  overflow:     hidden;
+  -moz-user-select: none;
+  cursor:       default;
+}
+
+.dynamic-slider-control.horizontal .handle {
+  width:        31px;
+  height:       14px;
+  background-image: url("/handle.horizontal.png");
+}
+
+.dynamic-slider-control.horizontal .handle div {}
+.dynamic-slider-control.horizontal .handle.hover {}
+
+.dynamic-slider-control.vertical .handle {
+  width:        15px;
+  height:       31px;
+  background-image: url("/handle.vertical.png");
+}
+
+.dynamic-slider-control.vertical .handle.hover {}
+
+.dynamic-slider-control .line {
+  position:     absolute;
+  font-size:      0.01mm;
+  overflow:     hidden;
+  border:       1px solid rgb(90,97,90);
+  background:     rgb(189,190,189);
+  
+  behavior:     url("/css/boxsizing.htc"); /* ie path bug */
+  box-sizing:     content-box;
+  -moz-box-sizing:  content-box;
+}
+.dynamic-slider-control.vertical .line {
+  width:        3px;
+}
+
+.dynamic-slider-control.horizontal .line {
+  height:       3px;
+}
+
+.dynamic-slider-control .line div {
+  width:    1px;
+  height:   1px;
+  
+  border:       1px solid;
+  border-color:   rgb(230,230,230) rgb(189,190,189)
+            rgb(189,190,189) rgb(230,230,230);
+}
+
+/*
 body {
   font: 10px sans-serif;
 }
-
+*/
 form {
   position: relative;
   left: 800px;
@@ -16,6 +92,7 @@ svg {
   position: absolute;
   top: 200px;
   left: 100px;
+  font: 10px sans-serif;
 }
 
 .axis path, .axis line {
@@ -33,7 +110,7 @@ svg {
 .song_line {
   fill: none;
   stroke: steelblue;
-  stroke-width: 3px;
+  stroke-width: 1.5px;
 }
 
 .dot {
@@ -55,13 +132,13 @@ svg {
 
 #pauseButton {
   position: absolute;
-  left: 170px;
+  left: 200px;
   top: 740px;
 }
 
 #stopButton {
   position: absolute;
-  left: 240px;
+  left: 300px;
   top: 740px;
 }
 
@@ -102,7 +179,7 @@ svg {
 
 .text{
   font-family: 'times new roman', times, serif;
-  font-size: 14px;
+  font-size: 15px;
   margin-left: 10px;
   margin-right: 10px;
 }
@@ -112,9 +189,42 @@ svg {
   margin-right: 10px;
 }
 
+#scrollbar_box {
+  background: LIGHTCYAN;
+  border: solid;
+  border-width: 3px;
+  width: 20%;
+  margin: 0 auto;
+  position: absolute;
+  left: 470px;
+  top: 90px;
+}
+#sample_id{
+  position: relative;
+  left: 20px;
+ }
+
+ #sample-input{
+  position: relative;
+  left: 150px;
+  width: 30%;
+ }
+ .sample_slider{
+  position: relative;
+  left: 20px;
+ }
+
+
 </style>
 
+
+<script type="text/javascript" src="/scrollbar/range.js"></script>
+<script type="text/javascript" src="/scrollbar/timer.js"></script>
+<script type="text/javascript" src="/scrollbar/slider.js"></script>
+
+
 <body>
+<div class="text">
 <form>
   <label><input type="radio" name="type" value="Voltage" onclick="change(0);" checked> Voltage</label>
   <label><input type="radio" name="type" value="Frequency" onclick="change(1);"> Frequency</label>
@@ -122,32 +232,30 @@ svg {
 </form>
 
 <div id="playButton">
-    <input name="playButton" 
-           type="button" 
-           value="Play" 
-           onclick="play();" 
-    />
+    <button onclick="play();">
+    <span class="glyphicon glyphicon-play"></span> Play
+    </button>
 </div>
 <div id="pauseButton">
-    <input name="pauseButton" 
-           type="button" 
-           value="Pause" 
-           onclick="pauseDrawingPath();" 
-    />
+    <button onclick="pauseDrawingPath();"> 
+    <span class="glyphicon glyphicon-pause"></span> Pause
+    </button>
+</div>
+<div id="stopButton">
+    <button onclick="stopDrawingPath();">
+    <span class="glyphicon glyphicon-stop"></span> Stop
+    </button>
 </div>
 
-<div id="stopButton">
-    <input name="stopButton" 
-           type="button" 
-           value="Stop" 
-           onclick="stopDrawingPath();" 
-    />
-</div>
+<!--
+
+DEBUG
 
 <textarea id="textBox1">Text to be changed</textarea>
 <textarea id="textBox2">Text to be changed</textarea>
 <textarea id="textBox3">Text to be changed</textarea>
 <textarea id="textBox4">Text to be changed</textarea>
+-->
 
 <audio id="player1">
     <source src="/in_the_air_tonight.mp3" />
@@ -156,22 +264,16 @@ svg {
     <source src="/you_cant_hurry_love.mp3" />
 </audio>
 
+<div id="scrollbar_box">
+<p>
+       <label id="sample_id" for="sample-slider">Sample:</label>
+        <div class="sample_slider" id="sample-slider" tabIndex="1">
+             <input class="slider-input" id="sample-slider-input" />
+        </div>
+    <input id="sample-input"  />
 
-
-<div class="box">
-      <p> 
-      <div id= "img_sanjuan">
-      <img src="/sanjuan.png"  /> 
-      </div>
-      <h2>San Juan, Puerto Rico</h2>
-      
-      <div class="text">   
-        Aquatic thrills abound in Puerto Rico, from world-class surfing at Rincon where the swells reach 35 feet to relaxed scuba diving, particularly around Mona Island, Desecheo Island and Vieques. 
-
-      </div>
-      </p>
+</p>
 </div>
-
 
 <script src="http://d3js.org/d3.v2.min.js?2.10.0"></script>
 <script>
@@ -430,6 +532,10 @@ var song_line = d3.svg.line()
     .interpolate("monotone")
     .x(function(d) { return x(d.x); })
     .y(function(d) { return y(d.y); });
+var dot_line = d3.svg.line()
+    .interpolate("monotone")
+    .x(function(d) { return x(d.x); })
+    .y(function(d) { return y(d.y); });
 
 
 //Container
@@ -537,6 +643,8 @@ svg.selectAll(".dot")
       if(mode == 0)
       {
 
+      stopDrawingPath();
+
       title = "Voltage vs Time";
       xaxis = "Time (seconds)";
       yaxis = "Voltage (volt)";
@@ -554,10 +662,12 @@ svg.selectAll(".dot")
     var svg = d3.select("body").transition();
         svg.select(".line")   // change the line
             .duration(750)
-            .attr("d", line);
+            .attr("d", line)
+            .style("stroke-dasharray", "none");
         svg.select(".song_line")   // change the song_line
             .duration(750)
-            .attr("d", song_line);
+            .attr("d", song_line)
+            .style("stroke-dasharray", "none");
         svg.select(".x.axis") // change the x axis
             .duration(750)
             .call(xAxis);
@@ -581,10 +691,7 @@ svg.selectAll(".dot")
         svg.select(".label_y")
            .duration(750)
            .text(yaxis);
-      if(playing)
-      {
-        play();
-      }
+
       }
       else if (mode == 1) {
 
@@ -607,10 +714,12 @@ svg.selectAll(".dot")
     var svg = d3.select("body").transition();
         svg.select(".line")   // change the line
             .duration(750)
-            .attr("d", line);
+            .attr("d", line)
+            .style("stroke-dasharray", "none");
         svg.select(".song_line")   // change the song_line
             .duration(750)
-            .attr("d", song_line);
+            .attr("d", song_line)
+            .style("stroke-dasharray", "none");
         svg.select(".x.axis") // change the x axis
             .duration(750)
             .call(xAxis);
@@ -638,20 +747,82 @@ svg.selectAll(".dot")
       }
       else if (mode == 2) {
 
+        stopDrawingPath();
+
       title = "Sample";
       xaxis = "Time (seconds)";
       yaxis = "Voltage (volt)";
-
+      
       x.domain([d3.min(data, function(d) { return d.x; }), d3.max(data, function(d) { return d.x; })]);
       y.domain([d3.min(data, function(d) { return d.y; }), d3.max(data, function(d) { return d.y; })+3]);
       var newline = d3.svg.line()
           .interpolate("monotone")
           .x(function(d) { return x(d.x); })
           .y(function(d) { return y(d3.min(data, function(d) { return d.y; })); });
+      /*line.x(function(d) { return x(d.x); })
+          .y(function(d) { return y(d.y); });
+        */
+      var max = 127;  
+      var value = 50;
+      var spaces = 0;  
+      spaces = max/value -1;
+      var count_x = 0;
+      var s_count_x = 0;
+      var count_y = 0;
+      var s_count_y = 0;
+      var first_x = 0;
+      var first_y = 0;
+      var f_x = true;
+      var f_y = true;
+
       line.x(function(d) { return x(d.x); })
           .y(function(d) { return y(d.y); });
       song_line.x(function(d) { return x(d.x); })
           .y(function(d) { return y(d.y); });
+      dot_line.x(function(d) {
+                      if(f_x)
+                      {
+                        count_x++; 
+                        first_x = x(d.x);
+                        f_x = false;
+                        return first_x; 
+                      }
+                      if(s_count_x >= spaces && count_x<value)
+                      {
+                        count_x++;
+                        s_count_x = 0;
+                        return x(d.x);
+                      }
+                      else
+                      {
+                        s_count_x++;
+                        return first_x;
+                      }
+
+
+                        })
+        .y(function(d) {
+                      if(f_y)
+                      {
+                        count_y++; 
+                        first_y = y(d.y);
+                        f_y = false;
+                        return first_y; 
+                      }  
+                      if(s_count_y >= spaces && count_y<value)
+                      {
+                        count_y++;
+                        s_count_y = 0;
+                        return y(d.y);
+                      }
+                      else
+                      {
+                        s_count_y++;
+                        return first_y;
+                      }
+                       
+                        });
+      
       area.x(function(d) { return x(d.x); })
           .y0(height)
           .y1(height);
@@ -659,10 +830,12 @@ svg.selectAll(".dot")
       var svg = d3.select("body").transition();
         svg.select(".line")   // change the line
             .duration(750)
-            .attr("d", line);
+            .attr("d", line)
+            .style("stroke-dasharray", ("3, 3"));
         svg.select(".song_line")   // change the song_line
             .duration(750)
-            .attr("d", song_line);
+            .attr("d", song_line)
+            .style("stroke-dasharray", ("3, 3"));
         svg.select(".x.axis") // change the x axis
             .duration(750)
             .call(xAxis);
@@ -674,8 +847,8 @@ svg.selectAll(".dot")
            .attr("d",area);
         svg.selectAll(".dot") //change dots  
            .duration(750)
-           .attr("cx", line.x())
-           .attr("cy", line.y())
+           .attr("cx", dot_line.x())
+           .attr("cy", dot_line.y())
            .attr("r", 3.5);
         svg.select(".label_title")
            .duration(750)
@@ -686,11 +859,6 @@ svg.selectAll(".dot")
         svg.select(".label_y")
            .duration(750)
            .text(yaxis);
-      
-      if(playing)
-      {
-        play();
-      }
 
       }
 
@@ -709,6 +877,7 @@ svg.selectAll(".dot")
  
 
 </script>
+
 <script>
 var drawFPS          = 20;
 
@@ -718,15 +887,19 @@ var playing = false;
 var paused = false;
 var song_time = d3.max(data, function(d) { return d.x; });
 var pathLength = orig.getTotalLength();
-var distancePerPoint = pathLength/(drawFPS*song_time);
-var textBox1 = document.getElementById('textBox1');
+var distancePerPoint = pathLength/(drawFPS*(song_time-1));
+/*var textBox1 = document.getElementById('textBox1');
 var textBox2 = document.getElementById('textBox2');
 var textBox3 = document.getElementById('textBox3');
 var textBox4 = document.getElementById('textBox4');
-
+*/
 function play(){
+  if(playing)
+  {
+    return;
+  }
   pathLength = orig.getTotalLength();
-  distancePerPoint = pathLength/(drawFPS*song_time);
+  distancePerPoint = pathLength/(drawFPS*(song_time-1));
   if(!paused)
   {
     length = 0;
@@ -736,9 +909,10 @@ function play(){
 
 function startDrawingPath(){
   //orig.style.stroke = '#f60';
-  textBox1.value = song_time;
+  /*textBox1.value = song_time;
   textBox2.value = pathLength;
   textBox4.value = distancePerPoint;
+  */
   orig.style.stroke = 'RED';
   //orig.style.stroke-width = '3px';
   playing = true;
@@ -749,7 +923,7 @@ function startDrawingPath(){
 
 function increaseLength(){
   length += distancePerPoint;
-  textBox3.value = length;
+  //textBox3.value = length;
   orig.style.strokeDasharray = [length,pathLength].join(' ');
   if (length >= pathLength) clearInterval(timer);
 }
@@ -766,8 +940,53 @@ function stopDrawingPath(){
   orig.style.stroke = '';
   orig.style.strokeDasharray = '';
   player2.pause();
-  player2.currentTime = 0;
+  if(playing){
+     player2.currentTime = 0;
+  }
   paused = false;
   playing = false;
 }
 </script>
+
+</div>
+<script type="text/javascript">
+
+// init code
+var s = new Slider(document.getElementById("sample-slider"), document.getElementById("sample-slider-input"));
+s.setMaximum(100);
+
+var si = document.getElementById("sample-input");
+si.onchange = function () {
+  s.setValue(parseInt(this.value));
+};
+
+s.onchange = function () {
+  si.value = s.getValue();
+  }
+/*-----------------------------------  Missing ---->  }   ------------------------------------------*/
+
+s.setValue(50);
+/*
+function fixSize() {
+  s.recalculate();
+
+}
+
+window.onresize = fixSize;
+
+fixSize();
+*/
+
+</script>
+
+<script>
+var home = document.getElementById('home');
+var signal_and_sampling = document.getElementById('signal_and_sampling');
+var sampling = document.getElementById('sampling');
+
+home.className = "";
+signal_and_sampling.className = "active";
+sampling.className = "";
+</script>
+
+</body>

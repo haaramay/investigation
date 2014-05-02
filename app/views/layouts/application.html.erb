@@ -1,47 +1,65 @@
 <!DOCTYPE html>
 <html>
 <style>
-#slider {
-  width:300px;
-  margin-bottom:20px;
+
+.divider-vertical{
+  font: 35px sans-serif;
+  color: gray;
 }
-svg {
-  margin-top:20px;
-}
+
 </style>
 <head>
-  <title> <%= full_title(yield(:title)) %> </title>
 
  <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
 <!-- Latest compiled and minified JavaScript -->
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> 
 
 <!-- d3js -->
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
+
 </head>
 <body>
+<nav class="navbar navbar-inverse" role="navigation">
+<div class="menu">
+		<div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Investigation</a>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" ng-controller="HeaderController">
+      <ul class="nav navbar-nav" >
 
-	<nav class="navbar navbar-inverse" role="navigation">
-		<ul class="nav pull-right">
-            <li><%= link_to "Home",    '#' %></li>
-            <li><%= link_to "Help",    '#' %></li>
-            <li><%= link_to "Sign in", '#' %></li>
-        </ul>
-	</nav>
+        <li id="home"><a href="../static_pages/home">Home</a></li>
+        <li id="signal_and_sampling"><a href="../static_pages/signal_and_sampling">Signal and Sampling</a></li>
+        <li id="sampling"><a href="../static_pages/sampling">Sampling</a></li>
 
 
-    <%= yield %>
+      </ul>
 
-<div id="sliderWrapper">
-    <div id="slider"></div>
-</div>
+      <!-- <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+      -->
 
+    </div><!-- /.navbar-collapse -->
+    
+    </div><!-- /.container-fluid -->
+</div> <!-- /.menu -->
+</nav>
+
+<%= yield %>
 
 </body>
 </html>

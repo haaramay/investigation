@@ -1,9 +1,11 @@
 Project::Application.routes.draw do
   root  'static_pages#home'
+  get "static_pages/home"
   get "static_pages/D3"
   get "static_pages/muestreo"
   get "static_pages/test"
-  
+  get "static_pages/signal_and_sampling"
+  get "static_pages/sampling"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
